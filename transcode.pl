@@ -12,7 +12,9 @@ my $config = {
 };
 
 # Pre-defined resolutions
-my $versions = [ '320', '640', '720', '1280', '1920', '2560' ];
+# my $versions = [ '320', '640', '720', '1280', '1920', '2560' ];
+#		['nHD', 'qHD', 'HD', 'HD+', 'FHD', 'WQHD', 'WQXGA+', '4K', '5K', '8K']
+my $versions = [ '640', '960', '1280', '1600', '1920', '2560', '3200', '3840', '5120', '7680' ];
 
 sub create_multiple_bitrate_versions {
 	my ($filename) = @_;
@@ -65,11 +67,11 @@ sub merge_manifests {
 		$manifest->{Period}->{AdaptationSet}->{Representation}->{id} = $_;
 		$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{media} = "$_/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{media};
 		$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{initialization} = "$_/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{initialization};
-		push $base_manifest->{Period}->{AdaptationSet}->[0]->{Representation}, $manifest->{Period}->{AdaptationSet}->{Representation};
+		push @{ $base_manifest->{Period}->{AdaptationSet}->[0]->{Representation} }, $manifest->{Period}->{AdaptationSet}->{Representation};
 		my $res_filename = "$_/$filename"."_dash.mpd";
 		`rm $res_filename`;
 	}
-	push $base_manifest->{Period}->{AdaptationSet}->[0]->{Representation}, $high_representation;
+	push @{ $base_manifest->{Period}->{AdaptationSet}->[0]->{Representation} }, $high_representation;
 
 	# open the audio manifest file to merge the representations with the base one
 	my $manifest = XMLin("audio/$filename"."_dash.mpd");
@@ -77,7 +79,7 @@ sub merge_manifests {
 	$manifest->{Period}->{AdaptationSet}->{Representation}->{id} = "audio";
 	$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{media} = "audio/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{media};
 	$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{initialization} = "audio/".$manifest->{Period}->{AdaptationSet}->{Representation}->{SegmentTemplate}->{initialization};
-	push $base_manifest->{Period}->{AdaptationSet}, $manifest->{Period}->{AdaptationSet};
+	push @{ $base_manifest->{Period}->{AdaptationSet} }, $manifest->{Period}->{AdaptationSet};
 	my $res_filename = "audio/$filename"."_dash.mpd";
 	`rm $res_filename`;
 
